@@ -5,7 +5,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Instala dependências do sistema necessárias
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl postgresql-client iputils
 
 # Copia os arquivos de configuração
 COPY package*.json ./
@@ -20,5 +20,9 @@ COPY . .
 # Expõe a porta 3000
 EXPOSE 3000
 
+# Script de espera para o banco de dados
+COPY scripts/wait-for-db.sh /wait-for-db.sh
+RUN chmod +x /wait-for-db.sh
+
 # Comando para iniciar a aplicação
-CMD ["npm", "run", "dev"] 
+CMD ["/wait-for-db.sh", "db", "--", "npm", "run", "dev"] 

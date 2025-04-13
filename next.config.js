@@ -7,11 +7,7 @@ const nextConfig = {
       aggregateTimeout: 300,
     }
     return config
-  },
-  // Adiciona configuração para aceitar hosts externos
-  webSocketServerOptions: {
-    host: '0.0.0.0',
-  },
+  }
 }
 
 module.exports = nextConfig 

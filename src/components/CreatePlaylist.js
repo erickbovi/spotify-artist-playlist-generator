@@ -1,22 +1,25 @@
 'use client';
 
 import { useState } from 'react';
+import { MusicalNoteIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
-export default function CreatePlaylist({ artists, onSuccess }) {
+export default function CreatePlaylist({ selectedArtists, onPlaylistCreated }) {
   const [playlistName, setPlaylistName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleCreatePlaylist = async () => {
     if (!playlistName.trim()) {
-      toast.error('Digite um nome para a playlist');
+      toast.error('Por favor, digite um nome para a playlist');
+      return;
+    }
+
+    if (!selectedArtists || selectedArtists.length === 0) {
+      toast.error('Por favor, selecione pelo menos um artista');
       return;
     }
 
     setIsCreating(true);
-    const loadingToast = toast.loading('Criando sua playlist...');
-
     try {
       const response = await fetch('/api/spotify/create-playlist', {
         method: 'POST',
@@ -25,49 +28,56 @@ export default function CreatePlaylist({ artists, onSuccess }) {
         },
         body: JSON.stringify({
           name: playlistName,
-          artistIds: artists.map(a => a.id),
+          artistIds: selectedArtists.map(artist => artist.id),
         }),
       });
 
-      if (!response.ok) throw new Error('Erro ao criar playlist');
-
       const data = await response.json();
-      toast.success('Playlist criada com sucesso!', {
-        id: loadingToast,
-      });
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao criar playlist');
+      }
+
+      if (data.warning) {
+        toast.success('Playlist criada com sucesso, mas houve um aviso: ' + data.warning);
+      } else {
+        toast.success('Playlist criada com sucesso!');
+      }
+
+      onPlaylistCreated(data.playlistUrl);
       setPlaylistName('');
-      onSuccess();
-      
-      // Abre a playlist no Spotify
-      window.open(data.playlistUrl, '_blank');
     } catch (error) {
-      toast.error('Erro ao criar playlist. Tente novamente.', {
-        id: loadingToast,
-      });
+      console.error('Erro ao criar playlist:', error);
+      toast.error(error.message || 'Erro ao criar playlist. Por favor, tente novamente.');
     } finally {
       setIsCreating(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative w-full max-w-md">
         <input
           type="text"
           value={playlistName}
           onChange={(e) => setPlaylistName(e.target.value)}
           placeholder="Nome da playlist"
-          className="w-full bg-spotify-light-black text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-spotify-green"
+          className="w-full h-10 px-4 py-2 pl-10 bg-white bg-opacity-95 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
           disabled={isCreating}
         />
+        <MusicalNoteIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
       </div>
       <button
-        type="submit"
+        onClick={handleCreatePlaylist}
         disabled={isCreating}
-        className="w-full bg-spotify-green hover:bg-spotify-green-light text-black font-bold py-3 px-8 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`create-playlist-btn ${
+          isCreating || !playlistName.trim() || !selectedArtists?.length
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:scale-105 hover:shadow-lg'
+        }`}
       >
         {isCreating ? 'Criando...' : 'Criar Playlist'}
       </button>
-    </form>
+    </div>
   );
 } 

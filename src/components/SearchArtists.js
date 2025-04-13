@@ -26,43 +26,44 @@ export default function SearchArtists({ onArtistSelect, selectedArtists }) {
   }, 300);
 
   return (
-    <div className="relative mb-8">
-      <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+    <div className="search-container">
+      <div className="relative w-full max-w-md">
         <input
           type="text"
           placeholder="Busque por artistas..."
           onChange={(e) => searchArtists(e.target.value)}
-          className="w-full bg-spotify-light-black text-white pl-12 pr-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-spotify-green"
+          className="w-full px-4 py-2 pl-10 bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
         />
+        <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
       </div>
 
+      {isLoading && (
+        <div className="text-gray-400">Carregando...</div>
+      )}
+
       {searchResults.length > 0 && (
-        <div className="absolute w-full mt-2 bg-spotify-light-black rounded-lg shadow-xl z-10 max-h-96 overflow-y-auto">
+        <div className="artist-grid">
           {searchResults.map((artist) => (
-            <button
+            <div
               key={artist.id}
+              className="artist-card"
               onClick={() => {
-                onArtistSelect(artist);
-                setSearchResults([]);
+                if (!selectedArtists.some(a => a.id === artist.id)) {
+                  onArtistSelect(artist);
+                  setSearchResults([]);
+                }
               }}
-              disabled={selectedArtists.some(a => a.id === artist.id)}
-              className="w-full p-4 flex items-center space-x-4 hover:bg-opacity-40 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {artist.images[0] && (
-                <img
-                  src={artist.images[0].url}
-                  alt={artist.name}
-                  className="w-12 h-12 rounded-full"
-                />
-              )}
-              <div className="text-left">
-                <p className="font-medium">{artist.name}</p>
-                <p className="text-sm text-gray-400">
-                  {artist.followers.total.toLocaleString()} seguidores
-                </p>
+              <img
+                src={artist.images[0]?.url || '/default-artist.jpg'}
+                alt={artist.name}
+                className="artist-image"
+              />
+              <div className="artist-name">{artist.name}</div>
+              <div className="artist-followers">
+                {artist.followers.total.toLocaleString()} seguidores
               </div>
-            </button>
+            </div>
           ))}
         </div>
       )}

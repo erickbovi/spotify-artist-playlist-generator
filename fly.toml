@@ -1,0 +1,28 @@
+app = "seu-app" # substitua pelo nome do seu app
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  NEXTAUTH_URL = "https://seu-app.fly.dev"
+  NEXTAUTH_SECRET = "seu-secret-aqui"
+  SPOTIFY_CLIENT_ID = "seu-client-id"
+  SPOTIFY_CLIENT_SECRET = "seu-client-secret"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[http_service.ports]]
+  handlers = ["http"]
+  port = 80
+
+[[http_service.ports]]
+  handlers = ["tls", "http"]
+  port = 443 

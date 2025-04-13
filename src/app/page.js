@@ -10,20 +10,21 @@ import { Toaster } from 'react-hot-toast';
 export default function Home() {
   const { data: session } = useSession();
   const [selectedArtists, setSelectedArtists] = useState([]);
+  const [playlistUrl, setPlaylistUrl] = useState(null);
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-spotify-dark to-black text-white flex items-center justify-center">
-        <div className="text-center space-y-8 p-8">
-          <h1 className="text-6xl font-bold tracking-tight">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="main-container">
+          <h1 className="text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
             Playlist Generator
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-gray-300 mt-4">
             Crie playlists com as músicas mais populares dos seus artistas favoritos
           </p>
           <button
             onClick={() => signIn('spotify')}
-            className="bg-spotify-green hover:bg-spotify-green-light text-black font-bold py-4 px-8 rounded-full transition-all"
+            className="create-playlist-btn mt-8"
           >
             Entrar com Spotify
           </button>
@@ -33,18 +34,25 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-spotify-dark to-black text-white">
-      <Toaster position="top-center" />
-      <div className="max-w-4xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Playlist Generator</h1>
+    <main className="min-h-screen">
+      <div className="main-container">
+        <Toaster position="top-center" />
+        <div className="relative mb-8">
+          <div className="flex justify-center">
+            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
+              Playlist Generator
+            </h1>
+          </div>
           <button
             onClick={() => signOut()}
-            className="text-sm text-gray-400 hover:text-white transition-colors"
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-gray-400 hover:text-white transition-colors"
           >
             Sair
           </button>
         </div>
+        <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+          Selecione os artistas de interesse e será criada uma playlist com as 5 músicas mais ouvidas de cada um
+        </p>
         
         <SearchArtists 
           onArtistSelect={(artist) => {
@@ -64,9 +72,25 @@ export default function Home() {
 
         {selectedArtists.length > 0 && (
           <CreatePlaylist
-            artists={selectedArtists}
-            onSuccess={() => setSelectedArtists([])}
+            selectedArtists={selectedArtists}
+            onPlaylistCreated={(url) => {
+              setPlaylistUrl(url);
+              setSelectedArtists([]);
+            }}
           />
+        )}
+
+        {playlistUrl && (
+          <div className="mt-8 text-center">
+            <a
+              href={playlistUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-500 hover:text-purple-400 transition-colors"
+            >
+              Abrir Playlist no Spotify
+            </a>
+          </div>
         )}
       </div>
     </main>
