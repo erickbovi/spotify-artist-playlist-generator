@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #6B46C1;
+  --secondary: #9F7AEA;
+  --accent: #D6BCFA;
+  --background: #1A202C;
+  --text: #F7FAFC;
+}
+
+body {
+  background: radial-gradient(circle at center, var(--background) 0%, #000000 100%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.main-container {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(26, 32, 44, 0.8);
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(107, 70, 193, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.artist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.artist-card {
+  background: rgba(159, 122, 234, 0.1);
+  border: 1px solid rgba(159, 122, 234, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.artist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(159, 122, 234, 0.3);
+  border-color: var(--secondary);
+}
+
+.artist-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.artist-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.artist-followers {
+  font-size: 0.875rem;
+  color: var(--accent);
+}
+
+.create-playlist-btn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.create-playlist-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(107, 70, 193, 0.5);
+}
+
+.galaxy-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.galaxy-effect::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, 
+    rgba(107, 70, 193, 0.1) 0%,
+    rgba(26, 32, 44, 0.2) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  animation: pulse 8s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
+
+/* Mantendo os estilos do scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(18, 18, 18);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #535353;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7f7f7f;
+}
+
+/* Animações suaves */
+.transition-all {
+  transition-duration: 200ms;
+}
+
+/* Estilos específicos do Spotify */
+.bg-spotify-gradient {
+  background: linear-gradient(to bottom, #1DB954, #191414);
+} 
