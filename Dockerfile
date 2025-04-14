@@ -29,7 +29,8 @@ COPY . .
 # Garante que o Tailwind e outras dependências de build estejam disponíveis
 RUN npm install tailwindcss postcss autoprefixer
 
-RUN npm run build
+# Gera o cliente Prisma e faz o build
+RUN npx prisma generate && npm run build
 
 # Production stage
 FROM node:18-alpine AS runner
