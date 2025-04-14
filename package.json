@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "npx prisma db push && next dev -H 0.0.0.0",
     "build": "prisma generate && next build",
-    "start": "next start -H 0.0.0.0",
+    "start": "prisma migrate deploy && next start -H 0.0.0.0",
     "postinstall": "prisma generate",
-    "db:migrate": "prisma db push"
+    "db:migrate": "prisma migrate deploy"
   },
   "dependencies": {
     "next": "14.1.0",

@@ -25,4 +25,4 @@ COPY scripts/wait-for-db.sh /wait-for-db.sh
 RUN chmod +x /wait-for-db.sh
 
 # Comando para iniciar a aplicação
-CMD ["/wait-for-db.sh", "db", "--", "npm", "run", "dev"] 
+CMD ["/wait-for-db.sh", "postgres", "--", "npm", "run", "start"] 
