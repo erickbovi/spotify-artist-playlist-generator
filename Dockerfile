@@ -6,8 +6,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app
 
-# Copia os arquivos de dependências
-COPY package*.json ./
+# Copia os arquivos de dependências incluindo o package-lock.json
+COPY package.json package-lock.json ./
 
 # Instala as dependências sem cache mount
 RUN npm ci --prefer-offline --only=production
