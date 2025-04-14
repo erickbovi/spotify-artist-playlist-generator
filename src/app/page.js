@@ -1,97 +1,64 @@
 'use client';
 
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { useState } from 'react';
-import SearchArtists from '../components/SearchArtists';
-import SelectedArtists from '../components/SelectedArtists';
-import CreatePlaylist from '../components/CreatePlaylist';
-import { Toaster } from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function Home() {
-  const { data: session } = useSession();
-  const [selectedArtists, setSelectedArtists] = useState([]);
-  const [playlistUrl, setPlaylistUrl] = useState(null);
-
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="main-container">
-          <h1 className="text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
-            Playlist Generator
-          </h1>
-          <p className="text-xl text-gray-300 mt-4">
-            Crie playlists com as músicas mais populares dos seus artistas favoritos
-          </p>
-          <button
-            onClick={() => signIn('spotify')}
-            className="create-playlist-btn mt-8"
-          >
-            Entrar com Spotify
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <main className="min-h-screen">
-      <div className="main-container">
-        <Toaster position="top-center" />
-        <div className="relative mb-8">
-          <div className="flex justify-center">
-            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
-              Playlist Generator
-            </h1>
-          </div>
-          <button
-            onClick={() => signOut()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            Sair
-          </button>
-        </div>
-        <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-          Selecione os artistas de interesse e será criada uma playlist com as 5 músicas mais ouvidas de cada um
-        </p>
+    <main className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-900 flex items-center justify-center p-4">
+      <div className="main-container max-w-5xl w-full">
+        <h1 className="text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 text-center mb-12">
+          Mini Apps
+        </h1>
         
-        <SearchArtists 
-          onArtistSelect={(artist) => {
-            if (selectedArtists.length < 5) {
-              setSelectedArtists([...selectedArtists, artist]);
-            }
-          }}
-          selectedArtists={selectedArtists}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Card do Gerador de Playlists */}
+          <Link href="/playlist" className="group">
+            <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-white/20">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-violet-400 mb-4">
+                  Playlist Generator
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Crie playlists com as músicas mais populares dos seus artistas favoritos
+                </p>
+                <div className="flex justify-center">
+                  <span className="px-6 py-3 bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white rounded-xl group-hover:shadow-lg transition-all duration-300 font-medium">
+                    Acessar →
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
 
-        <SelectedArtists
-          artists={selectedArtists}
-          onRemove={(artistId) => {
-            setSelectedArtists(selectedArtists.filter(a => a.id !== artistId));
-          }}
-        />
-
-        {selectedArtists.length > 0 && (
-          <CreatePlaylist
-            selectedArtists={selectedArtists}
-            onPlaylistCreated={(url) => {
-              setPlaylistUrl(url);
-              setSelectedArtists([]);
-            }}
-          />
-        )}
-
-        {playlistUrl && (
-          <div className="mt-8 text-center">
-            <a
-              href={playlistUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-500 hover:text-purple-400 transition-colors"
-            >
-              Abrir Playlist no Spotify
-            </a>
-          </div>
-        )}
+          {/* Card do Sudoku */}
+          <Link href="/sudoku" className="group">
+            <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-white/20">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z M4 12h16 M12 4v16 M8 4v16 M16 4v16" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-violet-400 mb-4">
+                  Sudoku
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Teste suas habilidades no Sudoku diário e entre no ranking!
+                </p>
+                <div className="flex justify-center">
+                  <span className="px-6 py-3 bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white rounded-xl group-hover:shadow-lg transition-all duration-300 font-medium">
+                    Acessar →
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
       </div>
     </main>
   );

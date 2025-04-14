@@ -70,7 +70,7 @@ ENV HOSTNAME "0.0.0.0"
 ENV NODE_ENV production
 
 # Comando de inicialização que executa o prisma db push e inicia a aplicação
-CMD sh -c "npx prisma generate && npx prisma db push && npm start"
+CMD sh -c "npx prisma generate && npx prisma db push --accept-data-loss && npm start"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
