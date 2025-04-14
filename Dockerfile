@@ -17,8 +17,9 @@ RUN npm install && npx prisma generate
 # Copia o resto do código
 COPY . .
 
-# Expõe a porta 3000
-EXPOSE 3000
+# Expõe a porta dinâmica
+ENV PORT=3000
+EXPOSE $PORT
 
 # Script de espera para o banco de dados
 COPY scripts/wait-for-db.sh /wait-for-db.sh
