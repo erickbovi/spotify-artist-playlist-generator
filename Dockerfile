@@ -1,5 +1,5 @@
 # Etapa de dependências
-FROM node:18-slim AS deps
+FROM node:18-slim AS dependencies
 WORKDIR /app
 
 # Instalar dependências necessárias
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar arquivos de dependências
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 RUN npm install
 
 # Etapa de build
@@ -25,30 +25,33 @@ RUN mkdir -p public
 
 # Copiar arquivos do projeto
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=dependencies /app/node_modules ./node_modules
 
 # Gerar o cliente Prisma e fazer o build
 RUN npx prisma generate && npm run build
 
 # Etapa de produção
-FROM node:18-slim AS runner
+FROM node:18-slim AS production
 WORKDIR /app
 
 # Criar usuário não-root
-RUN groupadd -r nodejs && useradd -r -g nodejs nextjs
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
 # Instalar dependências necessárias
 RUN apt-get update && apt-get install -y \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# Criar diretórios necessários
-RUN mkdir -p .next/static public
-
 # Copiar arquivos necessários
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static/
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public/
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+
+# Verificar se os arquivos foram copiados corretamente
+RUN ls -la
 
 # Definir usuário não-root
 USER nextjs
@@ -58,10 +61,11 @@ EXPOSE 3000
 
 # Definir variáveis de ambiente
 ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 ENV NODE_ENV production
 
 # Comando de inicialização
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
