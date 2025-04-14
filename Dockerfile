@@ -50,6 +50,11 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
+# Dar permissões corretas aos arquivos
+RUN chown -R nextjs:nodejs /app && \
+    chmod -R 755 /app && \
+    chmod -R 777 /app/node_modules/.prisma
+
 # Verificar se os arquivos foram copiados corretamente
 RUN ls -la
 
@@ -64,8 +69,8 @@ ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 ENV NODE_ENV production
 
-# Comando de inicialização
-CMD ["npm", "start"]
+# Comando de inicialização que executa o prisma db push e inicia a aplicação
+CMD sh -c "npx prisma generate && npx prisma db push && npm start"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
