@@ -9,9 +9,8 @@ WORKDIR /app
 # Copia os arquivos de dependências
 COPY package*.json ./
 
-# Instala as dependências com o formato de cache exigido pelo Railway
-RUN --mount=type=cache,id=npm-cache \
-    npm ci --prefer-offline --only=production
+# Instala as dependências sem cache mount
+RUN npm ci --prefer-offline --only=production
 
 # Build stage
 FROM node:18-alpine AS builder
