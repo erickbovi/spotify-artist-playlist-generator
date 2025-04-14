@@ -4,6 +4,9 @@ const nextConfig = {
   output: 'standalone',
   experimental: {
     serverActions: true,
+    serverOptions: {
+      hostname: '::'
+    }
   },
   webpack: (config) => {
     config.watchOptions = {
