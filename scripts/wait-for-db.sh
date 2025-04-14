@@ -8,11 +8,31 @@ shift
 cmd="$@"
 
 # Extrai as credenciais da DATABASE_URL
+if [ -z "$DATABASE_URL" ]; then
+  >&2 echo "Error: DATABASE_URL is not set"
+  exit 1
+fi
+
+# Remove o prefixo postgresql://
 DB_URL=${DATABASE_URL#postgresql://}
+
+# Extrai as partes da URL
 DB_USER=$(echo $DB_URL | cut -d':' -f1)
 DB_PASS=$(echo $DB_URL | cut -d':' -f2 | cut -d'@' -f1)
 DB_HOST=$(echo $DB_URL | cut -d'@' -f2 | cut -d'/' -f1)
 DB_NAME=$(echo $DB_URL | cut -d'/' -f2 | cut -d'?' -f1)
+
+# Valida as variáveis
+if [ -z "$DB_HOST" ]; then
+  >&2 echo "Error: Could not extract host from DATABASE_URL"
+  >&2 echo "DATABASE_URL: $DATABASE_URL"
+  exit 1
+fi
+
+>&2 echo "Waiting for database connection..."
+>&2 echo "Host: $DB_HOST"
+>&2 echo "User: $DB_USER"
+>&2 echo "Database: $DB_NAME"
 
 # Função para verificar se o host está resolvendo
 wait_for_host() {

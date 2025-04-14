@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  experimental: {
+    serverActions: true,
+  },
   webpack: (config) => {
     config.watchOptions = {
       poll: 1000,
