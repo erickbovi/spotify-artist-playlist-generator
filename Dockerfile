@@ -9,8 +9,8 @@ WORKDIR /app
 # Copia os arquivos de dependências
 COPY package*.json ./
 
-# Instala as dependências com cache mount corrigido
-RUN --mount=type=cache,id=npm:cache,target=/root/.npm \
+# Instala as dependências com cache mount no formato do Railway
+RUN --mount=type=cache,id=s/spotify-playlist-/root/.npm,target=/root/.npm \
     npm ci --prefer-offline --only=production
 
 # Build stage
@@ -41,8 +41,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
-
-EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
