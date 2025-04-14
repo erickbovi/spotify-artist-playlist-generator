@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instala as dependências com cache mount corrigido
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
+RUN --mount=type=cache,id=cache:npm,target=/root/.npm \
     npm ci --prefer-offline --only=production
 
 # Build stage
