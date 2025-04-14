@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instala as dependências com cache mount no formato do Railway
-RUN --mount=type=cache,id=s/spotify-playlist-/root/.npm,target=/root/.npm \
+RUN --mount=type=cache,id=s/b4d5caca-d379-4c7c-a78d-10725c38dd97-npm,target=/root/.npm \
     npm ci --prefer-offline --only=production
 
 # Build stage
