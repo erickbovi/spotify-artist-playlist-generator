@@ -34,4 +34,32 @@ model Artist {
   imageUrl    String?
   playlists   Playlist[]
   createdAt   DateTime   @default(now())
+}
+
+model SudokuPlayer {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  scores      SudokuScore[]
+  createdAt   DateTime      @default(now())
+}
+
+model DailySudoku {
+  id          String        @id @default(cuid())
+  date        DateTime      @unique @default(now())
+  board       String        // JSON string do tabuleiro inicial
+  solution    String        // JSON string da solução
+  scores      SudokuScore[]
+  createdAt   DateTime      @default(now())
+}
+
+model SudokuScore {
+  id            String      @id @default(cuid())
+  player        SudokuPlayer @relation(fields: [playerId], references: [id])
+  playerId      String
+  sudoku        DailySudoku @relation(fields: [sudokuId], references: [id])
+  sudokuId      String
+  time          Int         // Tempo em segundos
+  createdAt     DateTime    @default(now())
+
+  @@unique([playerId, sudokuId])
 } 
