@@ -1,56 +1,72 @@
-FROM node:18-alpine AS dependencies
-
-# Instalação do OpenSSL e outras dependências necessárias
-RUN apk add --no-cache openssl
-
-# Configuração de variáveis de ambiente
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
+# Etapa de dependências
+FROM node:18-slim AS dependencies
 WORKDIR /app
 
-# Copia os arquivos de dependências
-COPY package*.json ./
+# Instalar dependências necessárias
+RUN apt-get update && apt-get install -y \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala TODAS as dependências (incluindo devDependencies)
+# Copiar arquivos de dependências
+COPY package*.json ./
 RUN npm install
 
-# Build stage
-FROM node:18-alpine AS builder
-
-# Instalação do OpenSSL para o estágio de build
-RUN apk add --no-cache openssl
-
+# Etapa de build
+FROM node:18-slim AS builder
 WORKDIR /app
 
-COPY --from=dependencies /app/node_modules ./node_modules
+# Instalar dependências necessárias
+RUN apt-get update && apt-get install -y \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Criar diretório public se não existir
+RUN mkdir -p public
+
+# Copiar arquivos do projeto
 COPY . .
+COPY --from=dependencies /app/node_modules ./node_modules
 
-# Garante que o Tailwind e outras dependências de build estejam disponíveis
-RUN npm install tailwindcss postcss autoprefixer
-
-# Gera o cliente Prisma e faz o build
+# Gerar o cliente Prisma e fazer o build
 RUN npx prisma generate && npm run build
 
-# Production stage
-FROM node:18-alpine AS runner
-
+# Etapa de produção
+FROM node:18-slim AS production
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+# Criar usuário não-root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+# Instalar dependências necessárias
+RUN apt-get update && apt-get install -y \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+# Copiar arquivos necessários
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
 
+# Verificar se os arquivos foram copiados corretamente
+RUN ls -la
+
+# Definir usuário não-root
 USER nextjs
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+# Expor a porta
+EXPOSE 3000
 
-CMD ["npm", "start"] 
+# Definir variáveis de ambiente
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+ENV NODE_ENV production
+
+# Comando de inicialização
+CMD ["npm", "start"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/api/health || exit 1 
