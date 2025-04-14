@@ -38,5 +38,9 @@ wait_for_host
 # Depois espera o PostgreSQL estar pronto
 wait_for_postgres
 
+# Executa as migrações do Prisma
+>&2 echo "Running Prisma migrations..."
+npx prisma migrate deploy
+
 >&2 echo "Postgres is up - executing command"
 exec $cmd 
